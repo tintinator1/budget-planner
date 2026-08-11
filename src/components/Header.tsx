@@ -1,17 +1,35 @@
+import Image from "next/image";
+
 export function Header() {
   return (
     <header className="border-b border-border bg-surface/80 backdrop-blur-sm">
-      <div className="mx-auto max-w-3xl px-6 py-5">
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-accent">
-          Budget Planner
-        </p>
-        <h1 className="mt-1 text-2xl font-semibold text-foreground">
-          Plan your savings with clear numbers first
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm text-muted">
-          Enter your income, expenses, and goal. The calculator will compute the
-          plan; AI guidance comes after that.
-        </p>
+      <div className="mx-auto flex max-w-6xl items-center gap-4 px-6 py-4 sm:gap-6 sm:py-5">
+        
+        {/* Logo */}
+        <div className="shrink-0">
+          <Image
+            src="/android-chrome-512x512.png"
+            alt="Budget Planner logo"
+            width={64}
+            height={64}
+            className="h-14 w-14 shrink-0"
+          />
+        </div>
+
+        {/* Text */}
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-accent sm:text-sm">
+            Budget Planner
+          </p>
+
+          <h1 className="mt-1 text-xl font-semibold text-foreground sm:text-2xl md:text-3xl">
+            Plan your savings
+          </h1>
+
+          <p className="mt-2 max-w-2xl text-xs text-muted sm:text-sm md:text-base">
+            Still in development.
+          </p>
+        </div>
       </div>
     </header>
   );

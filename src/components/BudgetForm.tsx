@@ -68,8 +68,8 @@ export function BudgetForm({ onSubmit }: BudgetFormProps) {
   }
 
   return (
-    <form className="space-y-8" onSubmit={handleSubmit}>
-      <section className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
+    <form className="flex flex-col gap-8 lg:contents" onSubmit={handleSubmit}>
+      <section className="flex h-full flex-col rounded-2xl border border-border bg-surface p-6 shadow-sm lg:col-start-1 lg:row-start-1">
         <h2 className="text-lg font-semibold text-foreground">Income</h2>
         <p className="mt-1 text-sm text-muted">Your take-home pay each month.</p>
 
@@ -85,7 +85,7 @@ export function BudgetForm({ onSubmit }: BudgetFormProps) {
         </label>
       </section>
 
-      <section className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
+      <section className="rounded-2xl border border-border bg-surface p-6 shadow-sm lg:col-start-1 lg:row-start-2">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2 className="text-lg font-semibold text-foreground">Expenses</h2>
@@ -134,7 +134,7 @@ export function BudgetForm({ onSubmit }: BudgetFormProps) {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
+      <section className="rounded-2xl border border-border bg-surface p-6 shadow-sm lg:col-start-1 lg:row-start-3">
         <h2 className="text-lg font-semibold text-foreground">Savings goal</h2>
         <p className="mt-1 text-sm text-muted">
           What you want to save and how long you have to get there.
@@ -164,9 +164,9 @@ export function BudgetForm({ onSubmit }: BudgetFormProps) {
 
           <div className="grid gap-2">
             <span className="text-sm font-medium text-foreground">Timeframe</span>
-            <div className="grid grid-cols-[1fr_auto] gap-3">
+            <div className="grid min-w-0 grid grid-cols-[1fr_auto] gap-3">
               <input
-                className="rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none ring-accent/30 transition focus:ring-2"
+                className="min-w-0 rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none ring-accent/30 transition focus:ring-2"
                 inputMode="numeric"
                 placeholder="12"
                 value={form.timeframeValue}
@@ -175,7 +175,7 @@ export function BudgetForm({ onSubmit }: BudgetFormProps) {
                 }
               />
               <select
-                className="rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none ring-accent/30 transition focus:ring-2"
+                className="min-w-0 rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none ring-accent/30 transition focus:ring-2"
                 value={form.timeframeUnit}
                 onChange={(event) =>
                   setForm({
@@ -192,11 +192,13 @@ export function BudgetForm({ onSubmit }: BudgetFormProps) {
         </div>
       </section>
 
-      {error ? <p className="text-sm text-danger">{error}</p> : null}
+      {error ? (
+        <p className="text-sm text-danger lg:col-start-1 lg:row-start-4">{error}</p>
+      ) : null}
 
       <button
         type="submit"
-        className="rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-white transition hover:bg-accent-strong"
+        className="rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-white transition hover:bg-accent-strong lg:col-start-1 lg:row-start-5"
       >
         Generate plan
       </button>
