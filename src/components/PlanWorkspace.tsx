@@ -29,17 +29,17 @@ export function PlanWorkspace() {
       <Header />
 
       <div className="mx-auto max-w-6xl px-6">
-        <div className="flex flex-col gap-8 py-8 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-stretch lg:gap-8">
+        <div className="flex flex-col gap-8 py-8 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-8">
           <BudgetForm onSubmit={handleSubmit} />
 
-          <aside className="flex h-full flex-col rounded-2xl border border-border bg-surface p-6 shadow-sm lg:col-start-2 lg:row-start-1 lg:self-stretch">
+          <aside className="flex flex-col rounded-2xl border border-border bg-surface p-6 shadow-sm lg:sticky lg:top-8 lg:self-start">
             <h2 className="text-lg font-semibold text-foreground">Plan preview</h2>
             <p className="mt-1 text-sm text-muted">
               Your calculated plan will appear here.
             </p>
 
             {!result || !submittedInput ? (
-              <div className="mt-5 flex flex-1 items-center justify-center rounded-xl border border-dashed border-border bg-background px-4 py-3 text-center text-sm text-muted">
+              <div className="mt-5 rounded-xl border border-dashed border-border bg-background px-4 py-8 text-center text-sm text-muted">
                 Fill out the form and click Generate plan.
               </div>
             ) : (
