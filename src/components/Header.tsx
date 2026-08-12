@@ -27,7 +27,7 @@ export function Header() {
           </h1>
 
           <p className="mt-2 max-w-2xl text-xs text-muted sm:text-sm md:text-base">
-            Still in development.
+            In development
           </p>
         </div>
       </div>

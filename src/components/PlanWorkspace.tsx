@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { BudgetForm } from "@/components/BudgetForm";
 import { Header } from "@/components/Header";
-import { calculatePlan } from "@/lib/calculator";
-import type { BudgetPlanInput } from "@/lib/types";
 import type { BudgetPlanResult } from "@/lib/calculator";
+import type { PlanAdvice } from "@/lib/ai/types";
+import type { BudgetPlanInput } from "@/lib/types";
 
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -18,10 +18,45 @@ function formatCurrency(amount: number): string {
 export function PlanWorkspace() {
   const [submittedInput, setSubmittedInput] = useState<BudgetPlanInput | null>(null);
   const [result, setResult] = useState<BudgetPlanResult | null>(null);
+  const [advice, setAdvice] = useState<PlanAdvice | null>(null);
+  const [adviceError, setAdviceError] = useState("");
+  const [apiError, setApiError] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  function handleSubmit(input: BudgetPlanInput) {
+  async function handleSubmit(input: BudgetPlanInput) {
+    setIsGenerating(true);
     setSubmittedInput(input);
-    setResult(calculatePlan(input));
+    setApiError("");
+    setAdvice(null);
+    setAdviceError("");
+
+    try {
+      const response = await fetch("/api/plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input),
+      });
+
+      if (!response.ok) {
+        const data = (await response.json().catch(() => null)) as { error?: string } | null;
+        setResult(null);
+        setAdvice(null);
+        setApiError(data?.error ?? "Could not generate plan. Please try again.");
+        return;
+      }
+
+      const data = (await response.json()) as {
+        result: BudgetPlanResult;
+        advice: PlanAdvice | null;
+        adviceError: string | null;
+      };
+
+      setResult(data.result);
+      setAdvice(data.advice);
+      setAdviceError(data.adviceError ?? "");
+    } finally {
+      setIsGenerating(false);
+    }
   }
 
   return (
@@ -30,7 +65,10 @@ export function PlanWorkspace() {
 
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex flex-col gap-8 py-8 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-8">
-          <BudgetForm onSubmit={handleSubmit} />
+          <div className="flex flex-col gap-8">
+            <BudgetForm onSubmit={handleSubmit} isGenerating={isGenerating} />
+            {apiError ? <p className="text-sm text-danger">{apiError}</p> : null}
+          </div>
 
           <aside className="flex flex-col rounded-2xl border border-border bg-surface p-6 shadow-sm lg:sticky lg:top-8 lg:self-start">
             <h2 className="text-lg font-semibold text-foreground">Plan preview</h2>
@@ -105,6 +143,41 @@ export function PlanWorkspace() {
                     </dd>
                   </div>
                 </dl>
+
+                <section className="mt-6 border-t border-border pt-4">
+                  <h3 className="text-sm font-semibold text-foreground">BudgetAI Summary</h3>
+
+                  {advice ? (
+                    <div className="mt-4 space-y-4 text-sm">
+                      <p className="text-foreground">{advice.summary}</p>
+
+                      <div>
+                        <p className="font-medium text-foreground">Next steps</p>
+                        <ul className="mt-2 list-disc space-y-1 pl-5 text-foreground">
+                          {advice.actions.map((action) => (
+                            <li key={action}>{action}</li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {advice.riskFlags.length > 0 ? (
+                        <div>
+                          <p className="font-medium text-danger">Watch out for</p>
+                          <ul className="mt-2 list-disc space-y-1 pl-5 text-danger">
+                            {advice.riskFlags.map((flag) => (
+                              <li key={flag}>{flag}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <p className="mt-3 text-sm text-muted">
+                      {adviceError ||
+                        "BudgetAI advice unavailable."}
+                    </p>
+                  )}
+                </section>
               </>
             )}
           </aside>

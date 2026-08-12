@@ -9,7 +9,8 @@ import {
 } from "@/lib/types";
 
 type BudgetFormProps = {
-  onSubmit: (input: BudgetPlanInput) => void;
+  onSubmit: (input: BudgetPlanInput) => void | Promise<void>;
+  isGenerating?: boolean;
 };
 
 const defaultForm: BudgetPlanFormState = {
@@ -28,7 +29,7 @@ function createExpenseItem(): ExpenseFormItem {
   };
 }
 
-export function BudgetForm({ onSubmit }: BudgetFormProps) {
+export function BudgetForm({ onSubmit, isGenerating = false }: BudgetFormProps) {
   const [form, setForm] = useState<BudgetPlanFormState>(defaultForm);
   const [expenses, setExpenses] = useState<ExpenseFormItem[]>([
     createExpenseItem(),
@@ -54,8 +55,10 @@ export function BudgetForm({ onSubmit }: BudgetFormProps) {
     );
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isGenerating) return;
 
     const parsed = toBudgetPlanInput(form, expenses);
     if (!parsed) {
@@ -64,7 +67,7 @@ export function BudgetForm({ onSubmit }: BudgetFormProps) {
     }
 
     setError("");
-    onSubmit(parsed);
+    await onSubmit(parsed);
   }
 
   return (
@@ -196,9 +199,20 @@ export function BudgetForm({ onSubmit }: BudgetFormProps) {
 
       <button
         type="submit"
-        className="rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-white transition hover:bg-accent-strong"
+        disabled={isGenerating}
+        className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-white transition hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-70"
       >
-        Generate plan
+        {isGenerating ? (
+          <>
+            <span
+              aria-hidden="true"
+              className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
+            />
+            Generating plan...
+          </>
+        ) : (
+          "Generate plan"
+        )}
       </button>
     </form>
   );
