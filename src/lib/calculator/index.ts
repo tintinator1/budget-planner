@@ -1,12 +1,8 @@
 import type { BudgetPlanInput } from "@/lib/types";
 import { totalMonthlyExpenses, timeframeInMonths } from "@/lib/types";
 
-/**
- * Pure budget math lives here.
- * Add functions like calculatePlan(input) in the next step.
- */
+
 export type BudgetPlanResult = {
-  // Placeholder for calculator output — fill in when you implement the logic.
   totalExpenses: number;
   months: number;
   surplus: number;
