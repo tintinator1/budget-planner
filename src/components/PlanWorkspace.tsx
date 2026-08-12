@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { BudgetForm } from "@/components/BudgetForm";
 import { Header } from "@/components/Header";
+import { PasswordModal } from "@/components/PasswordModal";
 import type { BudgetPlanResult } from "@/lib/calculator";
 import type { PlanAdvice, PlanMode } from "@/lib/ai/types";
 import type { BudgetPlanInput } from "@/lib/types";
@@ -21,10 +22,13 @@ export function PlanWorkspace() {
   const [advice, setAdvice] = useState<PlanAdvice | null>(null);
   const [adviceError, setAdviceError] = useState("");
   const [apiError, setApiError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [planMode, setPlanMode] = useState<PlanMode | null>(null);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [pendingInput, setPendingInput] = useState<BudgetPlanInput | null>(null);
 
-  async function handleSubmit(input: BudgetPlanInput, mode: PlanMode) {
+  async function fetchPlan(input: BudgetPlanInput, mode: PlanMode, password = "") {
     setIsGenerating(true);
     setSubmittedInput(input);
     setPlanMode(mode);
@@ -35,24 +39,37 @@ export function PlanWorkspace() {
     const endpoint = mode === "ai" ? "/api/plan/advice" : "/api/plan";
 
     try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (mode === "ai") {
+        headers["AI-Access-Password"] = password;
+      }
+
       const response = await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(input),
       });
+
+      if (response.status === 401) {
+        setPasswordError("Incorrect password.");
+        return false;
+      }
 
       if (!response.ok) {
         const data = (await response.json().catch(() => null)) as { error?: string } | null;
         setResult(null);
         setAdvice(null);
         setApiError(data?.error ?? "Could not generate plan. Please try again.");
-        return;
+        return false;
       }
 
       if (mode === "calculator") {
         const data = (await response.json()) as { result: BudgetPlanResult };
         setResult(data.result);
-        return;
+        return true;
       }
 
       const data = (await response.json()) as {
@@ -64,19 +81,67 @@ export function PlanWorkspace() {
       setResult(data.result);
       setAdvice(data.advice);
       setAdviceError(data.adviceError ?? "");
+      return true;
     } finally {
       setIsGenerating(false);
     }
+  }
+
+  async function handleFormSubmit(input: BudgetPlanInput, mode: PlanMode) {
+    if (mode === "ai") {
+      setPendingInput(input);
+      setPasswordError("");
+      setShowPasswordModal(true);
+      return;
+    }
+
+    await fetchPlan(input, mode);
+  }
+
+  async function handlePasswordSubmit(password: string) {
+    if (!pendingInput) return;
+
+    if (!password.trim()) {
+      setPasswordError("Enter the AI access password.");
+      return;
+    }
+
+    setPasswordError("");
+    const success = await fetchPlan(pendingInput, "ai", password);
+
+    if (success) {
+      setShowPasswordModal(false);
+      setPendingInput(null);
+      setPasswordError("");
+    }
+  }
+
+  function handlePasswordModalClose() {
+    if (isGenerating) return;
+    setShowPasswordModal(false);
+    setPendingInput(null);
+    setPasswordError("");
   }
 
   return (
     <div className="min-h-full bg-background">
       <Header />
 
+      <PasswordModal
+        open={showPasswordModal}
+        error={passwordError}
+        isSubmitting={isGenerating}
+        onClose={handlePasswordModalClose}
+        onSubmit={handlePasswordSubmit}
+      />
+
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex flex-col gap-8 py-8 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-8">
           <div className="flex flex-col gap-8">
-            <BudgetForm onSubmit={handleSubmit} isGenerating={isGenerating} />
+            <BudgetForm
+              onSubmit={handleFormSubmit}
+              isGenerating={isGenerating || showPasswordModal}
+            />
             {apiError ? <p className="text-sm text-danger">{apiError}</p> : null}
           </div>
 
@@ -152,7 +217,7 @@ export function PlanWorkspace() {
                 </dl>
 
                 <section className="mt-6 border-t border-border pt-4">
-                  <h3 className="text-sm font-semibold text-foreground">BudgetAI Summary</h3>
+                  <h3 className="text-sm font-semibold text-foreground">BudgetAI</h3>
 
                   {planMode === "calculator" ? (
                     <p className="mt-3 text-sm text-muted">
@@ -184,8 +249,7 @@ export function PlanWorkspace() {
                     </div>
                   ) : (
                     <p className="mt-3 text-sm text-muted">
-                      {adviceError ||
-                        "BudgetAI advice unavailable."}
+                      {adviceError || "BudgetAI advice unavailable."}
                     </p>
                   )}
                 </section>

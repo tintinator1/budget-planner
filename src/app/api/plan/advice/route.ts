@@ -5,6 +5,13 @@ import { calculatePlan } from "@/lib/calculator";
 import { readPlanInput } from "@/lib/readPlanInput";
 
 export async function POST(request: Request) {
+  const passwordFromClient = request.headers.get("AI-Access-Password");
+  const expectedPassword = process.env.AI_ACCESS_PASSWORD;
+
+  if (passwordFromClient !== expectedPassword) {
+    return NextResponse.json({ error: "Incorrect password." }, { status: 401 });
+  }
+
   const input = await readPlanInput(request);
 
   if (!input) {

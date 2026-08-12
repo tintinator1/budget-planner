@@ -67,7 +67,6 @@ export function BudgetForm({ onSubmit, isGenerating = false }: BudgetFormProps) 
       setError("Check your inputs — income, goal, target, timeline, and expenses must be valid.");
       return;
     }
-
     setError("");
     await onSubmit(parsed, planMode);
   }
@@ -197,7 +196,7 @@ export function BudgetForm({ onSubmit, isGenerating = false }: BudgetFormProps) 
         </div>
       </section>
 
-      {error ? <p className="text-sm text-danger">{error}</p> : null}
+      
 
       <fieldset className="space-y-3">
         <legend className="text-sm font-medium text-foreground">Plan type</legend>
@@ -212,7 +211,7 @@ export function BudgetForm({ onSubmit, isGenerating = false }: BudgetFormProps) 
           />
           <span>
             <span className="block text-sm font-medium text-foreground">Numbers only</span>
-            <span className="block text-sm text-muted">Calculator results, no AI call.</span>
+            <span className="block text-sm text-muted">Calculator results</span>
           </span>
         </label>
         <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-surface px-4 py-3">
@@ -225,11 +224,13 @@ export function BudgetForm({ onSubmit, isGenerating = false }: BudgetFormProps) 
             className="mt-1"
           />
           <span>
-            <span className="block text-sm font-medium text-foreground">Numbers + AI guidance</span>
+            <span className="block text-sm font-medium text-foreground">Numbers + AI</span>
             <span className="block text-sm text-muted">Includes personalized BudgetAI summary.</span>
           </span>
-        </label>
+        </label>             
       </fieldset>
+
+      {error ? <p className="text-sm text-danger">{error}</p> : null}
 
       <button
         type="submit"
