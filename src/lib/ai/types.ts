@@ -6,7 +6,13 @@ export type PlanAdvice = {
   riskFlags: string[];
 };
 
-export type PlanApiResponse = {
+export type PlanMode = "calculator" | "ai";
+
+export type PlanCalculatorResponse = {
+  result: BudgetPlanResult;
+};
+
+export type PlanAdviceResponse = {
   result: BudgetPlanResult;
   advice: PlanAdvice | null;
   adviceError: string | null;

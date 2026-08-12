@@ -7,9 +7,10 @@ import {
   type ExpenseFormItem,
   toBudgetPlanInput,
 } from "@/lib/types";
+import type { PlanMode } from "@/lib/ai/types";
 
 type BudgetFormProps = {
-  onSubmit: (input: BudgetPlanInput) => void | Promise<void>;
+  onSubmit: (input: BudgetPlanInput, mode: PlanMode) => void | Promise<void>;
   isGenerating?: boolean;
 };
 
@@ -36,6 +37,7 @@ export function BudgetForm({ onSubmit, isGenerating = false }: BudgetFormProps) 
     createExpenseItem(),
   ]);
   const [error, setError] = useState("");
+  const [planMode, setPlanMode] = useState<PlanMode>("calculator");
 
   function updateExpense(id: string, patch: Partial<ExpenseFormItem>) {
     setExpenses((current) =>
@@ -67,7 +69,7 @@ export function BudgetForm({ onSubmit, isGenerating = false }: BudgetFormProps) 
     }
 
     setError("");
-    await onSubmit(parsed);
+    await onSubmit(parsed, planMode);
   }
 
   return (
@@ -196,6 +198,38 @@ export function BudgetForm({ onSubmit, isGenerating = false }: BudgetFormProps) 
       </section>
 
       {error ? <p className="text-sm text-danger">{error}</p> : null}
+
+      <fieldset className="space-y-3">
+        <legend className="text-sm font-medium text-foreground">Plan type</legend>
+        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-surface px-4 py-3">
+          <input
+            type="radio"
+            name="planMode"
+            value="calculator"
+            checked={planMode === "calculator"}
+            onChange={() => setPlanMode("calculator")}
+            className="mt-1"
+          />
+          <span>
+            <span className="block text-sm font-medium text-foreground">Numbers only</span>
+            <span className="block text-sm text-muted">Calculator results, no AI call.</span>
+          </span>
+        </label>
+        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-surface px-4 py-3">
+          <input
+            type="radio"
+            name="planMode"
+            value="ai"
+            checked={planMode === "ai"}
+            onChange={() => setPlanMode("ai")}
+            className="mt-1"
+          />
+          <span>
+            <span className="block text-sm font-medium text-foreground">Numbers + AI guidance</span>
+            <span className="block text-sm text-muted">Includes personalized BudgetAI summary.</span>
+          </span>
+        </label>
+      </fieldset>
 
       <button
         type="submit"

@@ -22,12 +22,8 @@ export function Header() {
             Budget Planner
           </p>
 
-          <h1 className="mt-1 text-xl font-semibold text-foreground sm:text-2xl md:text-3xl">
-            Plan your savings
-          </h1>
-
           <p className="mt-2 max-w-2xl text-xs text-muted sm:text-sm md:text-base">
-            In development
+            Still in development
           </p>
         </div>
       </div>

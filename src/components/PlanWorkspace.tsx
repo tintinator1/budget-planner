@@ -4,7 +4,7 @@ import { useState } from "react";
 import { BudgetForm } from "@/components/BudgetForm";
 import { Header } from "@/components/Header";
 import type { BudgetPlanResult } from "@/lib/calculator";
-import type { PlanAdvice } from "@/lib/ai/types";
+import type { PlanAdvice, PlanMode } from "@/lib/ai/types";
 import type { BudgetPlanInput } from "@/lib/types";
 
 function formatCurrency(amount: number): string {
@@ -22,16 +22,20 @@ export function PlanWorkspace() {
   const [adviceError, setAdviceError] = useState("");
   const [apiError, setApiError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [planMode, setPlanMode] = useState<PlanMode | null>(null);
 
-  async function handleSubmit(input: BudgetPlanInput) {
+  async function handleSubmit(input: BudgetPlanInput, mode: PlanMode) {
     setIsGenerating(true);
     setSubmittedInput(input);
+    setPlanMode(mode);
     setApiError("");
     setAdvice(null);
     setAdviceError("");
 
+    const endpoint = mode === "ai" ? "/api/plan/advice" : "/api/plan";
+
     try {
-      const response = await fetch("/api/plan", {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(input),
@@ -42,6 +46,12 @@ export function PlanWorkspace() {
         setResult(null);
         setAdvice(null);
         setApiError(data?.error ?? "Could not generate plan. Please try again.");
+        return;
+      }
+
+      if (mode === "calculator") {
+        const data = (await response.json()) as { result: BudgetPlanResult };
+        setResult(data.result);
         return;
       }
 
@@ -72,9 +82,6 @@ export function PlanWorkspace() {
 
           <aside className="flex flex-col rounded-2xl border border-border bg-surface p-6 shadow-sm lg:sticky lg:top-8 lg:self-start">
             <h2 className="text-lg font-semibold text-foreground">Plan preview</h2>
-            <p className="mt-1 text-sm text-muted">
-              Your calculated plan will appear here.
-            </p>
 
             {!result || !submittedInput ? (
               <div className="mt-5 rounded-xl border border-dashed border-border bg-background px-4 py-8 text-center text-sm text-muted">
@@ -147,7 +154,11 @@ export function PlanWorkspace() {
                 <section className="mt-6 border-t border-border pt-4">
                   <h3 className="text-sm font-semibold text-foreground">BudgetAI Summary</h3>
 
-                  {advice ? (
+                  {planMode === "calculator" ? (
+                    <p className="mt-3 text-sm text-muted">
+                      Nothing to see here.
+                    </p>
+                  ) : advice ? (
                     <div className="mt-4 space-y-4 text-sm">
                       <p className="text-foreground">{advice.summary}</p>
 

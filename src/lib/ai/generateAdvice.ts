@@ -63,7 +63,7 @@ export async function generateAdvice(
           "You are a practical personal budget coach for beginners.",
           
           "The calculator has already computed all financial numbers.",
-          "Do NOT simply repeat the user's income, expenses, surplus, savings goal, or required monthly savings.",
+          "Do NOT simply restate the user's financial numbers as the summary. You may reference provided numbers when they make a recommendation more specific or actionable.",
           
           "Your job is to interpret the numbers and give useful real-world advice.",
           
