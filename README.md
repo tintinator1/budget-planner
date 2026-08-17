@@ -17,5 +17,9 @@ User flow:
 - **Vitest** unit testing
 - **Next.js API routes**
 
+## Next Steps
 
-
+- Budget PDF export
+- Result in separate page
+- Auth ?
+- Email Budget Plan ?
