@@ -1,4 +1,4 @@
-## MVP scope (current)
+## Current MVP
 
 Budget Planner helps you build a budget for any goal with the assistance of AI for personalized understanding
 
