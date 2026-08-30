@@ -21,6 +21,7 @@ User flow:
 
 - Refine AI to output more meaningful advice
 - Redesign Plan to be its own page
+- Redesign web to be consistent, more asthetic in general
 - Budget PDF export
 - Result in separate page
 - Auth ?
