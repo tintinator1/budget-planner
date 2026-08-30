@@ -19,6 +19,8 @@ User flow:
 
 ## Next Steps
 
+- Refine AI to output more meaningful advice
+- Redesign Plan to be its own page
 - Budget PDF export
 - Result in separate page
 - Auth ?
