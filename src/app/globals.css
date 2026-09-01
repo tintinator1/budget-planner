@@ -9,12 +9,14 @@
   --accent: #0353a4;
   --accent-hover: #001845;
   --danger: #b42318;
+  --safe: #36e436;
   --button-background: #0353a4;
   --button-hover: #001845;
   --button-text: #17191f;
 }
 
 .dark {
+  --safe: #36e436;
   --background: #17191f;
   --surface: #4b6897;
   --foreground: #ffffff;
@@ -37,6 +39,7 @@
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-danger: var(--danger);
+  --color-safe: var(--safe);
   --color-button-background: var(--button-background);
   --color-button-hover: var(--button-hover);
   --color-button-text: var(--button-text);

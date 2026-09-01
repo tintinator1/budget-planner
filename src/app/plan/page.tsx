@@ -1,21 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/Header";
 import { PlanResults } from "@/components/PlanResults";
-import { loadPlan, type StoredPlan } from "@/lib/planStorage";
+import { loadPlan, subscribeToPlanStorage, type StoredPlan } from "@/lib/planStorage";
+
+function useIsClient() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+}
+
+function useStoredPlan(): StoredPlan | null {
+  return useSyncExternalStore(subscribeToPlanStorage, () => loadPlan(), () => null);
+}
 
 export default function PlanPage() {
   const router = useRouter();
-  const [planData] = useState<StoredPlan | null>(() => loadPlan());
+  const isClient = useIsClient();
+  const planData = useStoredPlan();
 
   useEffect(() => {
-    if (!planData) {
+    if (!isClient) return;
+    if (!loadPlan()) {
       router.replace("/");
     }
-  }, [planData, router]);
+  }, [isClient, router]);
 
   if (!planData) return null;
 
