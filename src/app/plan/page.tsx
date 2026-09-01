@@ -9,16 +9,14 @@ import { loadPlan, type StoredPlan } from "@/lib/planStorage";
 
 export default function PlanPage() {
   const router = useRouter();
-  const [planData, setPlanData] = useState<StoredPlan | null>(null);
+  const [planData] = useState<StoredPlan | null>(() => loadPlan());
 
   useEffect(() => {
-    const stored = loadPlan();
-    if (!stored) {
+    if (!planData) {
       router.replace("/");
-      return;
     }
-    setPlanData(stored);
-  }, [router]);
+  }, [planData, router]);
+
   if (!planData) return null;
 
   return (

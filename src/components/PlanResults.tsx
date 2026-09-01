@@ -89,41 +89,41 @@ export function PlanResults({
         </div>
       </dl>
 
-      <section className="mt-6 border-t border-border pt-4">
-        <h3 className="text-sm font-semibold text-foreground">BudgetAI</h3>
+      {planMode === "ai" ? (
+        <section className="mt-6 border-t border-border pt-4">
+          <h3 className="text-sm font-semibold text-foreground">BudgetAI</h3>
 
-        {planMode === "calculator" ? (
-          <p className="mt-3 text-sm text-muted">Nothing to see here.</p>
-        ) : advice ? (
-          <div className="mt-4 space-y-4 text-sm">
-            <p className="text-foreground">{advice.summary}</p>
+          {advice ? (
+            <div className="mt-4 space-y-4 text-sm">
+              <p className="text-foreground">{advice.summary}</p>
 
-            <div>
-              <p className="font-medium text-foreground">Next steps</p>
-              <ul className="mt-2 list-disc space-y-1 pl-5 text-foreground">
-                {advice.actions.map((action) => (
-                  <li key={action}>{action}</li>
-                ))}
-              </ul>
-            </div>
-
-            {advice.riskFlags.length > 0 ? (
               <div>
-                <p className="font-medium text-danger">Watch out for</p>
-                <ul className="mt-2 list-disc space-y-1 pl-5 text-danger">
-                  {advice.riskFlags.map((flag) => (
-                    <li key={flag}>{flag}</li>
+                <p className="font-medium text-foreground">Next steps</p>
+                <ul className="mt-2 list-disc space-y-1 pl-5 text-foreground">
+                  {advice.actions.map((action) => (
+                    <li key={action}>{action}</li>
                   ))}
                 </ul>
               </div>
-            ) : null}
-          </div>
-        ) : (
-          <p className="mt-3 text-sm text-muted">
-            {adviceError || "BudgetAI advice unavailable."}
-          </p>
-        )}
-      </section>
+
+              {advice.riskFlags.length > 0 ? (
+                <div>
+                  <p className="font-medium text-danger">Watch out for</p>
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-danger">
+                    {advice.riskFlags.map((flag) => (
+                      <li key={flag}>{flag}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
+          ) : (
+            <p className="mt-3 text-sm text-muted">
+              {adviceError || "BudgetAI advice unavailable."}
+            </p>
+          )}
+        </section>
+      ) : null}
     </article>
   );
 }

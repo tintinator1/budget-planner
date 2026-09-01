@@ -1,23 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { BudgetForm } from "@/components/BudgetForm";
 import { Header } from "@/components/Header";
 import { PasswordModal } from "@/components/PasswordModal";
-import type { BudgetPlanResult } from "@/lib/calculator";
 import type { PlanAdvice, PlanMode } from "@/lib/ai/types";
-import type { BudgetPlanInput } from "@/lib/types";
+import type { BudgetPlanResult } from "@/lib/calculator";
 import { savePlan } from "@/lib/planStorage";
-import { useRouter } from "next/navigation";
+import type { BudgetPlanInput } from "@/lib/types";
 
 export function PlanWorkspace() {
-
+  const router = useRouter();
   const [apiError, setApiError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [pendingInput, setPendingInput] = useState<BudgetPlanInput | null>(null);
-  const router = useRouter();
 
   async function fetchPlan(input: BudgetPlanInput, mode: PlanMode, password = "") {
     setIsGenerating(true);
@@ -51,35 +50,21 @@ export function PlanWorkspace() {
         return false;
       }
 
-      if (mode === "calculator") {
-        const data = (await response.json()) as { result: BudgetPlanResult };
-        savePlan({
-          input,
-          result: data.result,
-          planMode: "calculator",
-          advice: null,
-          adviceError: "",
-        });
-        router.push("/plan");
-        return true;
-      }
-
       const data = (await response.json()) as {
         result: BudgetPlanResult;
-        advice: PlanAdvice | null;
-        adviceError: string | null;
+        advice?: PlanAdvice | null;
+        adviceError?: string | null;
       };
 
       savePlan({
         input,
         result: data.result,
-        planMode: "ai",
-        advice: data.advice,
-        adviceError: data.adviceError ?? "",
+        planMode: mode,
+        advice: mode === "ai" ? (data.advice ?? null) : null,
+        adviceError: mode === "ai" ? (data.adviceError ?? "") : "",
       });
       router.push("/plan");
       return true;
-
     } finally {
       setIsGenerating(false);
     }
@@ -133,13 +118,13 @@ export function PlanWorkspace() {
         onSubmit={handlePasswordSubmit}
       />
 
-      <div className="mx-auto max-w-3xl px-6 py-8">
+      <main className="mx-auto max-w-3xl px-6 py-8">
         <BudgetForm
           onSubmit={handleFormSubmit}
           isGenerating={isGenerating || showPasswordModal}
         />
-        {apiError ? <p className="text-sm text-danger">{apiError}</p> : null}
-      </div>
+        {apiError ? <p className="mt-4 text-sm text-danger">{apiError}</p> : null}
+      </main>
     </div>
   );
 }

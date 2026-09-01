@@ -13,10 +13,14 @@ export type StoredPlan = {
 };
 
 export function savePlan(plan: StoredPlan) {
+  if (typeof window === "undefined") return;
+
   sessionStorage.setItem(STORAGE_KEY, JSON.stringify(plan));
 }
 
 export function loadPlan(): StoredPlan | null {
+  if (typeof window === "undefined") return null;
+
   const raw = sessionStorage.getItem(STORAGE_KEY);
   if (!raw) return null;
 
