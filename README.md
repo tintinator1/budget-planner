@@ -7,7 +7,7 @@ User flow:
 1. Enter monthly income
 2. Enter monthly expenses
 3. Set a savings goal, target amount, and timeframe
-4. Generate a plan — see calculated numbers, or try BudgetAI for a deeper understanding
+4. Generate a plan — view results on a dedicated plan page, with optional BudgetAI advice
 
 ## Stack
 
@@ -20,9 +20,7 @@ User flow:
 ## Next Steps
 
 - Refine AI to output more meaningful advice
-- Redesign Plan to be its own page
-- Redesign web to be consistent, more asthetic in general
+- Redesign web to be consistent, more aesthetic in general
 - Budget PDF export
-- Result in separate page
 - Auth ?
 - Email Budget Plan ?
