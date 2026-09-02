@@ -8,6 +8,7 @@ import {
   toBudgetPlanInput,
 } from "@/lib/types";
 import type { PlanMode } from "@/lib/ai/types";
+import { Button } from "./Button";
 
 type BudgetFormProps = {
   onSubmit: (input: BudgetPlanInput, mode: PlanMode) => void | Promise<void>;
@@ -33,7 +34,6 @@ function createExpenseItem(): ExpenseFormItem {
 export function BudgetForm({ onSubmit, isGenerating = false }: BudgetFormProps) {
   const [form, setForm] = useState<BudgetPlanFormState>(defaultForm);
   const [expenses, setExpenses] = useState<ExpenseFormItem[]>([
-    createExpenseItem(),
     createExpenseItem(),
   ]);
   const [error, setError] = useState("");
@@ -97,13 +97,9 @@ export function BudgetForm({ onSubmit, isGenerating = false }: BudgetFormProps) 
               Break down monthly spending. The calculator will sum these for you.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={addExpense}
-            className="rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground transition hover:bg-background"
-          >
-            Add expense
-          </button>
+          <Button variant="primary" type="button" onClick={addExpense}>
+            Add Expense
+          </Button>
         </div>
 
         <div className="mt-5 space-y-3">
@@ -126,13 +122,9 @@ export function BudgetForm({ onSubmit, isGenerating = false }: BudgetFormProps) 
                   updateExpense(expense.id, { amount: event.target.value })
                 }
               />
-              <button
-                type="button"
-                onClick={() => removeExpense(expense.id)}
-                className="rounded-xl px-3 py-2 text-sm text-muted transition hover:bg-background hover:text-danger"
-              >
+              <Button variant="cancel" type="button" onClick={() => removeExpense(expense.id)}>
                 Remove
-              </button>
+              </Button>
             </div>
           ))}
         </div>
@@ -178,19 +170,22 @@ export function BudgetForm({ onSubmit, isGenerating = false }: BudgetFormProps) 
                   setForm({ ...form, timeframeValue: event.target.value })
                 }
               />
-              <select
-                className="min-w-0 rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none ring-accent/30 transition focus:ring-2"
-                value={form.timeframeUnit}
-                onChange={(event) =>
-                  setForm({
-                    ...form,
-                    timeframeUnit: event.target.value as BudgetPlanFormState["timeframeUnit"],
-                  })
-                }
-              >
-                <option value="months">Months</option>
-                <option value="years">Years</option>
-              </select>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant={form.timeframeUnit === "months" ? "primary" : "secondary"}
+                  onClick={() => setForm({ ...form, timeframeUnit: "months" })}
+                >
+                  Months
+                </Button>
+                <Button
+                  type="button"
+                  variant={form.timeframeUnit === "years" ? "primary" : "secondary"}
+                  onClick={() => setForm({ ...form, timeframeUnit: "years" })}
+                >
+                  Years
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -199,8 +194,8 @@ export function BudgetForm({ onSubmit, isGenerating = false }: BudgetFormProps) 
       
 
       <fieldset className="space-y-3">
-        <legend className="text-sm font-medium text-foreground">Plan type</legend>
-        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-surface px-4 py-3">
+        <legend className="text-lg font-bold text-foreground">Plan type</legend>
+        <label className="flex items-start gap-3 rounded-xl border border-border bg-surface hover:cursor-pointer hover:bg-button-hover/20 px-4 py-3">
           <input
             type="radio"
             name="planMode"
@@ -211,10 +206,10 @@ export function BudgetForm({ onSubmit, isGenerating = false }: BudgetFormProps) 
           />
           <span>
             <span className="block text-sm font-medium text-foreground">Numbers only</span>
-            <span className="block text-sm text-muted">Calculator results</span>
+            <span className="block text-sm text-muted">Straight forward budget calculation.</span>
           </span>
         </label>
-        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-surface px-4 py-3">
+        <label className="flex items-start gap-3 rounded-xl border border-border bg-surface hover:cursor-pointer hover:bg-button-hover/20 px-4 py-3">
           <input
             type="radio"
             name="planMode"
@@ -232,23 +227,19 @@ export function BudgetForm({ onSubmit, isGenerating = false }: BudgetFormProps) 
 
       {error ? <p className="text-sm text-danger">{error}</p> : null}
 
-      <button
-        type="submit"
-        disabled={isGenerating}
-        className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-white transition hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-70"
-      >
+      <Button variant="primary" type="submit" disabled={isGenerating}>
         {isGenerating ? (
           <>
             <span
               aria-hidden="true"
               className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
             />
-            Generating plan...
+            Generating Plan...
           </>
         ) : (
-          "Generate plan"
+          "Generate Plan"
         )}
-      </button>
+      </Button>
     </form>
   );
 }

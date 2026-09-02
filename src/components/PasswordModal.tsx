@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "./Button";
+
 type PasswordModalProps = {
   open: boolean;
   error: string;
@@ -39,13 +41,13 @@ export function PasswordModal({
         aria-labelledby="password-modal-title"
         className="relative w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-lg"
       >
-        <h2 id="password-modal-title" className="text-lg font-semibold text-foreground">
+        <h2 id="password-modal-title" className="text-lg font-bold text-foreground">
           Access Required
         </h2>
 
         <form className="mt-5 space-y-4" onSubmit={handleSubmit}>
           <label className="grid gap-2">
-            <span className="text-sm font-medium text-foreground">Password</span>
+            <span className="text-base font-medium text-foreground">Password</span>
             <input
               name="password"
               type="password"
@@ -59,31 +61,19 @@ export function PasswordModal({
           {error ? <p className="text-sm text-danger">{error}</p> : null}
 
           <div className="flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={isSubmitting}
-              className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-foreground transition hover:bg-background disabled:opacity-70"
-            >
+            <Button variant="cancel" type="button" onClick={onClose}>
               Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-70"
-            >
+            </Button>
+            <Button variant="primary" type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
-                  <span
-                    aria-hidden="true"
-                    className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
-                  />
-                  Generating...
+                  <span aria-hidden="true" className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  Unlocking...
                 </>
               ) : (
-                "Continue"
+                "Unlock"
               )}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

@@ -82,7 +82,7 @@ export function PlanResults({
               : "Still short each month"}
           </dt>
           <dd
-            className={`mt-1 font-medium ${result.gap >= 0 ? "text-accent" : "text-danger"}`}
+            className={`mt-1 font-medium ${result.gap >= 0 ? "text-safe" : "text-danger"}`}
           >
             {formatCurrency(Math.abs(result.gap))}
           </dd>

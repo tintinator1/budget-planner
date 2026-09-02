@@ -12,21 +12,40 @@ export type StoredPlan = {
   adviceError: string;
 };
 
+let cachedRaw: string | null | undefined;
+let cachedPlan: StoredPlan | null = null;
+
 export function savePlan(plan: StoredPlan) {
   if (typeof window === "undefined") return;
 
-  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(plan));
+  const serialized = JSON.stringify(plan);
+  sessionStorage.setItem(STORAGE_KEY, serialized);
+  cachedRaw = serialized;
+  cachedPlan = plan;
 }
 
 export function loadPlan(): StoredPlan | null {
   if (typeof window === "undefined") return null;
 
   const raw = sessionStorage.getItem(STORAGE_KEY);
-  if (!raw) return null;
+  if (raw === cachedRaw) return cachedPlan;
 
-  try {
-    return JSON.parse(raw) as StoredPlan;
-  } catch {
+  cachedRaw = raw;
+  if (!raw) {
+    cachedPlan = null;
     return null;
   }
+
+  try {
+    cachedPlan = JSON.parse(raw) as StoredPlan;
+  } catch {
+    cachedPlan = null;
+  }
+
+  return cachedPlan;
+}
+
+export function subscribeToPlanStorage(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
+  return () => window.removeEventListener("storage", onStoreChange);
 }

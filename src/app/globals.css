@@ -1,14 +1,35 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #f4f7fb;
   --surface: #ffffff;
   --foreground: #102033;
   --muted: #5b6b7c;
-  --border: #d8e0ea;
-  --accent: #0f766e;
-  --accent-strong: #0b5f59;
+  --border: #ffffff;
+  --accent: #0353a4;
+  --accent-hover: #001845;
   --danger: #b42318;
+  --safe: #36e436;
+  --button-background: #0466c8;
+  --button-hover: #023e7d;
+  --button-text: #ffffff;
+}
+
+.dark {
+  --background: #17191f;
+  --surface: #4b6897;
+  --foreground: #ffffff;
+  --muted: #d2ddeb;
+  --border: #17191f;
+  --accent: #0353a4;
+  --accent-hover: #0466c8;
+  --danger: #f87171;
+  --safe: #36e436;
+  --button-background: #42a5f5;
+  --button-hover: #a3d9fa;
+  --button-text: #17191f;
 }
 
 @theme inline {
@@ -18,8 +39,12 @@
   --color-muted: var(--muted);
   --color-border: var(--border);
   --color-accent: var(--accent);
-  --color-accent-strong: var(--accent-strong);
+  --color-accent-hover: var(--accent-hover);
   --color-danger: var(--danger);
+  --color-safe: var(--safe);
+  --color-button-background: var(--button-background);
+  --color-button-hover: var(--button-hover);
+  --color-button-text: var(--button-text);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -32,5 +57,7 @@ body {
 
 input,
 button {
-  font: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
 }
