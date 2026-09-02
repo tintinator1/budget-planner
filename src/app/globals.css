@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #f4f7fb;
   --surface: #ffffff;
@@ -16,7 +18,6 @@
 }
 
 .dark {
-  --safe: #36e436;
   --background: #17191f;
   --surface: #4b6897;
   --foreground: #ffffff;
@@ -25,6 +26,7 @@
   --accent: #0353a4;
   --accent-hover: #0466c8;
   --danger: #f87171;
+  --safe: #36e436;
   --button-background: #42a5f5;
   --button-hover: #a3d9fa;
   --button-text: #17191f;

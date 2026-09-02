@@ -195,7 +195,7 @@ export function BudgetForm({ onSubmit, isGenerating = false }: BudgetFormProps) 
 
       <fieldset className="space-y-3">
         <legend className="text-lg font-bold text-foreground">Plan type</legend>
-        <label className="flex items-start gap-3 rounded-xl border border-border bg-surface hover:cursor-pointer hover:bg-button-hover/60 px-4 py-3">
+        <label className="flex items-start gap-3 rounded-xl border border-border bg-surface hover:cursor-pointer hover:bg-button-hover/20 px-4 py-3">
           <input
             type="radio"
             name="planMode"
@@ -209,7 +209,7 @@ export function BudgetForm({ onSubmit, isGenerating = false }: BudgetFormProps) 
             <span className="block text-sm text-muted">Straight forward budget calculation.</span>
           </span>
         </label>
-        <label className="flex items-start gap-3 rounded-xl border border-border bg-surface hover:cursor-pointer hover:bg-button-hover/60 px-4 py-3">
+        <label className="flex items-start gap-3 rounded-xl border border-border bg-surface hover:cursor-pointer hover:bg-button-hover/20 px-4 py-3">
           <input
             type="radio"
             name="planMode"

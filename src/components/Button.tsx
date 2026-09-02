@@ -6,9 +6,9 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
     primary:
       "bg-button-background text-button-text hover:cursor-pointer hover:bg-button-hover disabled:cursor-not-allowed disabled:opacity-70",
     secondary:
-      "text-foreground hover:cursor-pointer hover:bg-background disabled:opacity-70",
+      "text-foreground hover:cursor-pointer hover:bg-button-hover/20 disabled:opacity-70",
     cancel:
-      "text-danger bg-background hover:cursor-pointer hover:bg-background/20",
+      "text-danger hover:cursor-pointer hover:bg-button-hover/20 dark:hover:bg-button-hover/30",
   };
 
   export function Button({

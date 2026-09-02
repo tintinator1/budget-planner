@@ -3,7 +3,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Header() {
   return (
-    <header className="border-b border-[#001845] bg-[#17191f] backdrop-blur-sm">
+    <header className="border-b border-[#5b6b7c] bg-[#17191f] backdrop-blur-sm">
       <div className="flex w-full items-center gap-3 px-10 py-2">
         <div className="shrink-0">
           <Image
