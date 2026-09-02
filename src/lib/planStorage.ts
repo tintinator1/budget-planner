@@ -12,8 +12,38 @@ export type StoredPlan = {
   adviceError: string;
 };
 
+export type StoredFormDraft = {
+  input: BudgetPlanInput;
+  planMode: PlanMode;
+};
+
+const PLAN_STORAGE_EVENT = "budget-plan-storage-change";
+
 let cachedRaw: string | null | undefined;
 let cachedPlan: StoredPlan | null = null;
+let cachedFormDraft: StoredFormDraft | null = null;
+
+function syncFormDraftCache(plan: StoredPlan | null) {
+  if (!plan) {
+    cachedFormDraft = null;
+    return;
+  }
+
+  if (
+    cachedFormDraft &&
+    cachedFormDraft.input === plan.input &&
+    cachedFormDraft.planMode === plan.planMode
+  ) {
+    return;
+  }
+
+  cachedFormDraft = { input: plan.input, planMode: plan.planMode };
+}
+
+function notifyPlanStorageChange() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event(PLAN_STORAGE_EVENT));
+}
 
 export function savePlan(plan: StoredPlan) {
   if (typeof window === "undefined") return;
@@ -22,6 +52,8 @@ export function savePlan(plan: StoredPlan) {
   sessionStorage.setItem(STORAGE_KEY, serialized);
   cachedRaw = serialized;
   cachedPlan = plan;
+  syncFormDraftCache(plan);
+  notifyPlanStorageChange();
 }
 
 export function loadPlan(): StoredPlan | null {
@@ -33,6 +65,7 @@ export function loadPlan(): StoredPlan | null {
   cachedRaw = raw;
   if (!raw) {
     cachedPlan = null;
+    syncFormDraftCache(null);
     return null;
   }
 
@@ -42,10 +75,20 @@ export function loadPlan(): StoredPlan | null {
     cachedPlan = null;
   }
 
+  syncFormDraftCache(cachedPlan);
   return cachedPlan;
+}
+
+export function loadFormDraft(): StoredFormDraft | null {
+  loadPlan();
+  return cachedFormDraft;
 }
 
 export function subscribeToPlanStorage(onStoreChange: () => void) {
   window.addEventListener("storage", onStoreChange);
-  return () => window.removeEventListener("storage", onStoreChange);
+  window.addEventListener(PLAN_STORAGE_EVENT, onStoreChange);
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(PLAN_STORAGE_EVENT, onStoreChange);
+  };
 }
