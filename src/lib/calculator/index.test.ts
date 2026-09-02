@@ -10,7 +10,7 @@ function makeInput(overrides: Partial<BudgetPlanInput> = {}): BudgetPlanInput {
     goalName: "Emergency fund",
     savingsTarget: 5000,
     timeframeValue: 12,
-    timeframeUnit: "months",
+    timeframeUnit: "Months",
     ...overrides,
   };
 }
@@ -74,7 +74,7 @@ describe("calculatePlan", () => {
       makeInput({
         savingsTarget: 12000,
         timeframeValue: 1,
-        timeframeUnit: "years",
+        timeframeUnit: "Years",
       }),
     );
 
