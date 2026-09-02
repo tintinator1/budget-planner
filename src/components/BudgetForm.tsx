@@ -6,6 +6,7 @@ import {
   type BudgetPlanInput,
   type ExpenseFormItem,
   toBudgetPlanInput,
+  toBudgetPlanFormState,
 } from "@/lib/types";
 import type { PlanMode } from "@/lib/ai/types";
 import { Button } from "./Button";
@@ -13,6 +14,10 @@ import { Button } from "./Button";
 type BudgetFormProps = {
   onSubmit: (input: BudgetPlanInput, mode: PlanMode) => void | Promise<void>;
   isGenerating?: boolean;
+  initialDraft?: {
+    input: BudgetPlanInput;
+    planMode: PlanMode;
+  };
 };
 
 const defaultForm: BudgetPlanFormState = {
@@ -20,7 +25,7 @@ const defaultForm: BudgetPlanFormState = {
   goalName: "",
   savingsTarget: "",
   timeframeValue: "12",
-  timeframeUnit: "months",
+  timeframeUnit: "Months",
 };
 
 function createExpenseItem(): ExpenseFormItem {
@@ -31,13 +36,34 @@ function createExpenseItem(): ExpenseFormItem {
   };
 }
 
-export function BudgetForm({ onSubmit, isGenerating = false }: BudgetFormProps) {
-  const [form, setForm] = useState<BudgetPlanFormState>(defaultForm);
-  const [expenses, setExpenses] = useState<ExpenseFormItem[]>([
-    createExpenseItem(),
-  ]);
+function getInitialFormState(initialDraft?: BudgetFormProps["initialDraft"]) {
+  if (!initialDraft) {
+    return {
+      form: defaultForm,
+      expenses: [createExpenseItem()],
+      planMode: "calculator" as PlanMode,
+    };
+  }
+
+  const { form, expenses } = toBudgetPlanFormState(initialDraft.input);
+
+  return {
+    form,
+    expenses: expenses.length > 0 ? expenses : [createExpenseItem()],
+    planMode: initialDraft.planMode,
+  };
+}
+
+export function BudgetForm({
+  onSubmit,
+  isGenerating = false,
+  initialDraft,
+}: BudgetFormProps) {
+  const initial = getInitialFormState(initialDraft);
+  const [form, setForm] = useState(initial.form);
+  const [expenses, setExpenses] = useState(initial.expenses);
   const [error, setError] = useState("");
-  const [planMode, setPlanMode] = useState<PlanMode>("calculator");
+  const [planMode, setPlanMode] = useState<PlanMode>(initial.planMode);
 
   function updateExpense(id: string, patch: Partial<ExpenseFormItem>) {
     setExpenses((current) =>
@@ -173,15 +199,15 @@ export function BudgetForm({ onSubmit, isGenerating = false }: BudgetFormProps) 
               <div className="flex gap-2">
                 <Button
                   type="button"
-                  variant={form.timeframeUnit === "months" ? "primary" : "secondary"}
-                  onClick={() => setForm({ ...form, timeframeUnit: "months" })}
+                  variant={form.timeframeUnit === "Months" ? "primary" : "secondary"}
+                  onClick={() => setForm({ ...form, timeframeUnit: "Months" })}
                 >
                   Months
                 </Button>
                 <Button
                   type="button"
-                  variant={form.timeframeUnit === "years" ? "primary" : "secondary"}
-                  onClick={() => setForm({ ...form, timeframeUnit: "years" })}
+                  variant={form.timeframeUnit === "Years" ? "primary" : "secondary"}
+                  onClick={() => setForm({ ...form, timeframeUnit: "Years" })}
                 >
                   Years
                 </Button>

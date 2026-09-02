@@ -4,7 +4,7 @@ export type ExpenseItem = {
   amount: number;
 };
 
-export type TimeframeUnit = "months" | "years";
+export type TimeframeUnit = "Months" | "Years";
 
 export type BudgetPlanInput = {
   monthlyIncome: number;
@@ -78,7 +78,27 @@ export function totalMonthlyExpenses(expenses: ExpenseItem[]): number {
 }
 
 export function timeframeInMonths(input: BudgetPlanInput): number {
-  return input.timeframeUnit === "years"
+  return input.timeframeUnit === "Years"
     ? input.timeframeValue * 12
     : input.timeframeValue;
+}
+
+export function toBudgetPlanFormState(input: BudgetPlanInput): {
+  form: BudgetPlanFormState;
+  expenses: ExpenseFormItem[];
+} {
+  return {
+    form: {
+      monthlyIncome: String(input.monthlyIncome),
+      goalName: input.goalName,
+      savingsTarget: String(input.savingsTarget),
+      timeframeValue: String(input.timeframeValue),
+      timeframeUnit: input.timeframeUnit,
+    },
+    expenses: input.expenses.map((expense) => ({
+      id: expense.id,
+      label: expense.label,
+      amount: String(expense.amount),
+    })),
+  };
 }

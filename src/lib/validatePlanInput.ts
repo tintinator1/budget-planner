@@ -9,7 +9,7 @@ export function isBudgetPlanInput(value: unknown): value is BudgetPlanInput {
   if (typeof input.goalName !== "string" || !input.goalName.trim()) return false;
   if (typeof input.savingsTarget !== "number" || input.savingsTarget <= 0) return false;
   if (typeof input.timeframeValue !== "number" || input.timeframeValue <= 0) return false;
-  if (input.timeframeUnit !== "months" && input.timeframeUnit !== "years") return false;
+  if (input.timeframeUnit !== "Months" && input.timeframeUnit !== "Years") return false;
 
   if (!Array.isArray(input.expenses)) return false;
 

@@ -1,17 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { BudgetForm } from "@/components/BudgetForm";
 import { Header } from "@/components/Header";
 import { PasswordModal } from "@/components/PasswordModal";
 import type { PlanAdvice, PlanMode } from "@/lib/ai/types";
 import type { BudgetPlanResult } from "@/lib/calculator";
-import { savePlan } from "@/lib/planStorage";
+import { loadFormDraft, savePlan, subscribeToPlanStorage } from "@/lib/planStorage";
 import type { BudgetPlanInput } from "@/lib/types";
+
+function useIsClient() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+}
+
+function useStoredFormDraft() {
+  return useSyncExternalStore(
+    subscribeToPlanStorage,
+    () => loadFormDraft(),
+    () => null,
+  );
+}
 
 export function PlanWorkspace() {
   const router = useRouter();
+  const isClient = useIsClient();
+  const initialDraft = useStoredFormDraft();
   const [apiError, setApiError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -85,7 +103,7 @@ export function PlanWorkspace() {
     if (!pendingInput) return;
 
     if (!password.trim()) {
-      setPasswordError("Enter the AI access password.");
+      setPasswordError("Enter password.");
       return;
     }
 
@@ -119,10 +137,14 @@ export function PlanWorkspace() {
       />
 
       <main className="mx-auto max-w-3xl px-6 py-8">
-        <BudgetForm
-          onSubmit={handleFormSubmit}
-          isGenerating={isGenerating || showPasswordModal}
-        />
+        {isClient ? (
+          <BudgetForm
+            key={initialDraft ? "restored" : "empty"}
+            initialDraft={initialDraft ?? undefined}
+            onSubmit={handleFormSubmit}
+            isGenerating={isGenerating || showPasswordModal}
+          />
+        ) : null}
         {apiError ? <p className="mt-4 text-sm text-danger">{apiError}</p> : null}
       </main>
     </div>

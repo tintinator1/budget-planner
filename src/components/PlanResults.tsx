@@ -2,7 +2,7 @@
 
 import type { BudgetPlanResult } from "@/lib/calculator";
 import type { PlanAdvice, PlanMode } from "@/lib/ai/types";
-import type { BudgetPlanInput } from "@/lib/types";
+import type { BudgetPlanInput, ExpenseItem } from "@/lib/types";
 
 type PlanResultsProps = {
   input: BudgetPlanInput;
@@ -29,7 +29,7 @@ export function PlanResults({
 }: PlanResultsProps) {
   return (
     <article className="flex flex-col rounded-2xl border border-border bg-surface p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-foreground">Your plan</h2>
+      <h2 className="text-lg font-semibold text-foreground">Your Plan</h2>
 
       <dl className="mt-6 space-y-4 text-sm">
         <div>
@@ -64,13 +64,13 @@ export function PlanResults({
 
       <dl className="mt-6 space-y-4 border-t border-border pt-4 text-sm">
         <div>
-          <dt className="text-muted">Monthly Money After Expenses</dt>
+          <dt className="text-muted">Monthly money after expenses</dt>
           <dd className="mt-1 font-medium text-foreground">
             {formatCurrency(result.surplus)}
           </dd>
         </div>
         <div>
-          <dt className="text-muted">Monthly Required Savings</dt>
+          <dt className="text-muted">Monthly required savings</dt>
           <dd className="mt-1 font-medium text-foreground">
             {formatCurrency(result.requiredMonthlySavings)}
           </dd>
@@ -95,7 +95,24 @@ export function PlanResults({
 
           {advice ? (
             <div className="mt-4 space-y-4 text-sm">
-              <p className="text-foreground">{advice.summary}</p>
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="font-semibold text-foreground">{advice.headline}</p>
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide ${
+                      advice.verdict === "on_track"
+                        ? "bg-safe/15 text-safe"
+                        : advice.verdict === "tight"
+                          ? "bg-accent/15 text-accent"
+                          : "bg-danger/15 text-danger"
+                    }`}
+                  >
+                    {advice.verdict.replace("_", " ")}
+                  </span>
+                </div>
+                <p className="text-foreground">{advice.summary}</p>
+                <p className="text-muted">{advice.win}</p>
+              </div>
 
               <div>
                 <p className="font-medium text-foreground">Next steps</p>
@@ -116,6 +133,10 @@ export function PlanResults({
                   </ul>
                 </div>
               ) : null}
+
+              <p className="rounded-xl border border-border bg-background px-4 py-3 text-muted">
+                {advice.checkInHint}
+              </p>
             </div>
           ) : (
             <p className="mt-3 text-sm text-muted">
@@ -125,5 +146,51 @@ export function PlanResults({
         </section>
       ) : null}
     </article>
+  );
+}
+
+type PlanExpenseBreakdownProps = {
+  expenses: ExpenseItem[];
+  totalExpenses: number;
+  monthlyIncome: number;
+};
+
+export function PlanExpenseBreakdown({
+  expenses,
+  totalExpenses,
+  monthlyIncome,
+}: PlanExpenseBreakdownProps) {
+  const sortedExpenses = [...expenses].sort((a, b) => b.amount - a.amount);
+
+  return (
+    <aside className="flex flex-col rounded-2xl border border-border bg-surface p-6 shadow-sm lg:sticky lg:top-8 lg:self-start">
+      <h2 className="text-lg font-semibold text-foreground">Expense Breakdown</h2>
+      <p className="mt-1 text-sm text-muted">
+        {formatCurrency(totalExpenses)} total ·{" "}
+        {monthlyIncome > 0 ? Math.round((totalExpenses / monthlyIncome) * 100) : 0}% of income
+      </p>
+
+      <ul className="mt-5 space-y-3">
+        {sortedExpenses.map((expense) => {
+          const shareOfTotal =
+            totalExpenses > 0 ? Math.round((expense.amount / totalExpenses) * 100) : 0;
+
+          return (
+            <li
+              key={expense.id}
+              className="rounded-xl border border-border bg-background px-4 py-3 text-sm"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <span className="font-medium text-foreground">{expense.label}</span>
+                <span className="shrink-0 font-semibold text-foreground">
+                  {formatCurrency(expense.amount)}
+                </span>
+              </div>
+              <p className="mt-1 text-xs text-muted">{shareOfTotal}% of expenses</p>
+            </li>
+          );
+        })}
+      </ul>
+    </aside>
   );
 }

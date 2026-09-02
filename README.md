@@ -20,7 +20,7 @@ User flow:
 ## Next Steps
 
 - Refine AI to output more meaningful advice
-- Redesign web to be consistent, more aesthetic in general
+- Redesign web to be consistent, more aesthetic in general (Done)
 - Budget PDF export
 - Auth ?
 - Email Budget Plan ?
